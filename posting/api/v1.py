@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from auth.auth_bearer import JWTBearer
 
 from ..models import PostSchema
 
@@ -13,12 +14,12 @@ posts = [
 router = APIRouter()
 
 
-@router.get("/posts", tags=["posts"])
+@router.get("/posts", tags=["posts"], dependencies=[Depends(JWTBearer())])
 async def get_posts() -> dict:
     return {"data": posts}
 
 
-@router.get("/posts/{id}", tags=["posts"])
+@router.get("/posts/{id}", tags=["posts"], dependencies=[Depends(JWTBearer())])
 async def get_single_post(id: int) -> dict:
     if id > len(posts):
         return {
@@ -32,7 +33,7 @@ async def get_single_post(id: int) -> dict:
             }
 
 
-@router.post("/posts", tags=["posts"])
+@router.post("/posts", tags=["posts"], dependencies=[Depends(JWTBearer())])
 async def add_post(post: PostSchema) -> dict:
     post.id = len(posts) + 1
     posts.append(post.dict())
